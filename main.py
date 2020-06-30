@@ -26,6 +26,13 @@
 6.cd ~ -> 자신의 홈 디렉토리로 이동
 7.cd - -> 이전 경로로 이동
 
+**구현옵션 : 
+1.cd . 
+2.cd .. 
+3.cd ~ 
+4.cd 절대경로 
+5.cd 상대경로
+
 -mkdir
 디렉토리를 만든다.
 
@@ -34,6 +41,12 @@
 2.mkdir 파일이름 파일이름 파일이름 -> 여러 파일 한번에 생성가능, 멀티스레딩을 이용하여 동시에 생성
 3.mkdir -m 권한 파일이름 -> 디렉토리를 생성할 때 권한을 설정한다. default = 777
 4.mkdir -p 파일경로 -> 절대경로, 상대경로 가능, 파일경로에 디렉토리를 생성한다.
+
+**구현옵션 
+1. mkdir dir1 dir2 dir3...
+2. mkdir –p dir1/dir2/dir3...
+3. mkdir –m 3-digits filename
+
 
 -ls
 현재 디렉토리의 파일에 대한 리스트를 보여준다.
@@ -134,13 +147,73 @@ class ObjectHandler:
         self.user = user
         self.objectList = list()
 
+class inputData:
 
+    def __init__(self,args):
+
+        self.command = None
+        self.option = None
+        self.args = list()
+        self.argLen = len(args)
         
 
+        if(self.argLen == 0):
+            raise ValueError
+        # print("argLen : ",self.argLen)
+        # print("args : " ,args)
+        # print("args[0]: ",args[0])
+        
+        if args[0] in ["cd","ls","pwd","mkdir","rm","cat","cp","find"]:
+            self.command = args[0]
+        else:
+            raise ValueError
 
+        for argument in args[1:]:
+            if argument[0] == "-" or argument[0] == ">":
+                self.option = argument
+            else:
+                self.args.append(argument)
+
+    def __str__(self):
+        print("==============")
+        print("command : ",self.command)
+        print("option : ",self.option)
+        print("argLen : ",self.argLen)
+        for i in self.args:
+            print(i)
+        
+        return super.__str__(self)
 
 if __name__ == "__main__":
-    print("jungmoo:os macbookair$ ",end="")
-    inputValue = input()
-    print(inputValue)
+    while(True):
+        print("User:directoryName macbookair$ ",end="")
+        avg = input()
+
+        if(avg == "exit"):
+            break
+
+        inputList = avg.split(" ")
+        try:
+            dat = inputData(inputList)
+        except ValueError:
+            print("wrong input")
+            continue
+
+        if dat.command == "cd":
+            pass
+        elif dat.command == "pwd":
+            pass
+        elif dat.command == "ls":
+            pass
+        elif dat.command == "mkdir":
+            pass
+        elif dat.command == "cp":
+            pass
+        elif dat.command == "cat":
+            pass
+        elif dat.command == "rm":
+            pass
+        elif dat.command == "find":
+            pass
+        
 
