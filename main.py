@@ -119,33 +119,78 @@
 4. find 상대경로/절대경로 (-name) (part)
 
 """
+import time
 
 class User:
-    def __init__(self,id,pwd):
-        self.id = id
+    name = None
+    pwd = None
+
+    def __init__(self,name,pwd):
+        self.name = name
         self.pwd = pwd
 
 class Object:
+    name = None
+    size = None
+    create_date = None
+    update_date = None
 
-    def __init__(self,name,size,path,createDate,editDate):
+    def __init__(self,name,size):
         self.name = name
         self.size = size
-        self.path = path
-        self.createDate = createDate
-        self.editDate = editDate
+        self.create_date = time.time()
+        self.update_date = time.time()
 
 class File(Object):
-    pass
+    content = None
+
+    def __init__(self,name,size):
+        super.init(self,name,size)
+        self.content = str()
 
 class Folder(Object):
-    pass
+    child_list = list()
+    child_num = 0
+
+    def __init(self,name,size):
+        super.init(self,name,size)
+        self.child_list = list()
+        self.child_num = 0
+
+    def addFolder(self,sub_directory):
+        self.child_list.append(sub_directory)
+        self.child_num = self.child_num + 1
 
 class ObjectHandler:
 
-    def __init__(self,root,user,objectList):
+    def __init__(self,root,user):
         self.root = root
         self.user = user
-        self.objectList = list()
+        self.current = root
+
+    def cd(self,inputData):
+        self.current = inputData
+    
+    def ls(self,inputData):
+        pass
+
+    def pwd(self,inputData):
+        print(self.root.name,inputData.command)
+
+    def mkdir(self,inputData):
+        pass
+
+    def rm(self,inputData):
+        pass
+
+    def cp(self,inputData):
+        pass
+
+    def cat(self,inputData):
+        pass
+
+    def find(self,inputData):
+        pass
 
 class inputData:
 
@@ -184,9 +229,21 @@ class inputData:
         
         return super.__str__(self)
 
+def initProgram():
+    user = User("park","1234")
+    root = Folder("root",0)
+    user_folder = Folder(user.name,0)
+    root.addFolder(user_folder)
+
+    handler = ObjectHandler(root,user)
+    return handler
+
 if __name__ == "__main__":
+
+    handler = initProgram()
+
     while(True):
-        print("User:directoryName macbookair$ ",end="")
+        print("{user}:{current} macbookair$ ".format(user = handler.user.name,current = handler.current.name),end="")
         avg = input()
 
         if(avg == "exit"):
@@ -202,7 +259,7 @@ if __name__ == "__main__":
         if dat.command == "cd":
             pass
         elif dat.command == "pwd":
-            pass
+            handler.pwd(dat)
         elif dat.command == "ls":
             pass
         elif dat.command == "mkdir":
@@ -215,5 +272,5 @@ if __name__ == "__main__":
             pass
         elif dat.command == "find":
             pass
-        
+
 
