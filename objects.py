@@ -41,7 +41,7 @@ class Object:
 class File(Object):
     content = None
 
-    def __init__(self,name,size,path):
+    def __init__(self,name,size,path=""):
         super().__init__(name,size,path)
         self.content = str()
 
@@ -49,7 +49,7 @@ class Folder(Object):
     child_list = list()
     child_num = 0
 
-    def __init__(self,name,size,path):
+    def __init__(self,name,size,path=""):
         super().__init__(name,size,path)
         self.child_list = list()
         self.child_num = 0
@@ -68,14 +68,40 @@ class ObjectHandler:
     def cd(self,inputData):
 
         if len(inputData.args) > 1:
+            #define user error (07/02)
             raise ValueError
 
         dir_name = inputData.args[0]
+        
+        if dir_name == ".":
+            print(dir_name)
 
-        for i in self.child_list:
-            if  dir_name == i.name:
-                if isDir(i):
-                    pass
+        elif dir_name == "..":
+            print(dir_name)
+
+        elif dir_name == "~":
+            print(dir_name)
+            self.current = self.root 
+            inputData.args[0] = "park"
+            return self.cd(inputData)
+
+        elif dir_name == "/":
+            print(dir_name)
+            self.current = self.root
+
+        elif isPath(dir_name):
+            print(dir_name)
+            dir_list = dir_name.split("/")
+            for i in dir_list:
+                self.cd(i)
+
+        else :
+            print(dir_name)
+            for i in self.current.child_list:
+                if  dir_name == i.name:
+                    if isDir(i):
+                        self.current = i
+                    
     
     def ls(self,inputData):
         for i in self.current.child_list:
