@@ -1,11 +1,20 @@
 import time
 from userExceptions import *
 
-def isPath(argument):
-    if '/' in argument:
+def isPath(string_obj):
+    if '/' in string_obj:
         return 1
     return 0
 
+def isDir(dir_or_file_obj):
+    if str(type(dir_or_file_obj)) == "<class 'objects.Folder'>":
+        return 1
+    return 0
+
+def isFile(dir_or_file_obj):
+    if str(type(dir_or_file_obj)) == "<class 'objects.File'>":
+        return 1
+    return 0
 
 class User:
     name = None
@@ -33,15 +42,15 @@ class File(Object):
     content = None
 
     def __init__(self,name,size,path):
-        super.init(self,name,size,path)
+        super().__init__(name,size,path)
         self.content = str()
 
 class Folder(Object):
     child_list = list()
     child_num = 0
 
-    def __init(self,name,size,path):
-        super.init(self,name,size,path)
+    def __init__(self,name,size,path):
+        super().__init__(name,size,path)
         self.child_list = list()
         self.child_num = 0
 
@@ -57,7 +66,16 @@ class ObjectHandler:
         self.current = root
 
     def cd(self,inputData):
-        pass
+
+        if len(inputData.args) > 1:
+            raise ValueError
+
+        dir_name = inputData.args[0]
+
+        for i in self.child_list:
+            if  dir_name == i.name:
+                if isDir(i):
+                    pass
     
     def ls(self,inputData):
         for i in self.current.child_list:
@@ -77,9 +95,11 @@ class ObjectHandler:
 
                 if isPath(i):
                     raise FileOrFolderNameError("directory name is path")
+
                 for j in self.current.child_list:
                     if i == j.name:
                         raise FileOrFolderNameError("same directory is exist")
+                    
                 _dir = Folder(i,0,self.current.name)
                 self.current.addFolder(_dir)
 
