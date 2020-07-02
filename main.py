@@ -119,136 +119,9 @@
 4. find 상대경로/절대경로 (-name) (part)
 
 """
-import time
-
-class User:
-    name = None
-    pwd = None
-
-    def __init__(self,name,pwd):
-        self.name = name
-        self.pwd = pwd
-
-class Object:
-    name = None
-    size = None
-    create_date = None
-    update_date = None
-    path = str()
-
-    def __init__(self,name,size,path=""):
-        self.name = name
-        self.size = size
-        self.create_date = time.time()
-        self.update_date = time.time()
-        self.path = path + "/" + name
-
-class File(Object):
-    content = None
-
-    def __init__(self,name,size,path):
-        super.init(self,name,size,path)
-        self.content = str()
-
-class Folder(Object):
-    child_list = list()
-    child_num = 0
-
-    def __init(self,name,size,path):
-        super.init(self,name,size,path)
-        self.child_list = list()
-        self.child_num = 0
-
-    def addFolder(self,sub_directory):
-        self.child_list.append(sub_directory)
-        self.child_num = self.child_num + 1
-
-class ObjectHandler:
-
-    def __init__(self,root,user):
-        self.root = root
-        self.user = user
-        self.current = root
-
-    def cd(self,inputData):
-        pass
-    
-    def ls(self,inputData):
-        for i in self.current.child_list:
-            print(i.name,end = " ")
-            
-        print()
-
-    def pwd(self,inputData):
-        if inputData.option is not None:
-            print("pwd : {option} : invalid option ".format(inputData.option))
-        else:
-            print(self.current.path)
-
-    def mkdir(self,inputData):
-        if inputData.option is None:
-            for i in inputData.args:
-                for j in self.current.child_list:
-                    print("i : ", i, "j : ",j.name)
-                    if i == j.name:
-                        raise ValueError
-                _dir = Folder(i,0,self.current.name)
-                self.current.addFolder(_dir)
-
-        elif inputData.option == "-p":
-            pass
-
-        elif inputData.option == "-m":
-            pass
-
-        else:
-            pass
-
-    def rm(self,inputData):
-        pass
-
-    def cp(self,inputData):
-        pass
-
-    def cat(self,inputData):
-        pass
-
-    def find(self,inputData):
-        pass
-
-class inputData:
-
-    def __init__(self,args):
-
-        self.command = None
-        self.option = None
-        self.args = list()
-        self.argLen = len(args)
-        
-
-        if(self.argLen == 0):
-            raise ValueError
-
-        if args[0] in ["cd","ls","pwd","mkdir","rm","cat","cp","find"]:
-            self.command = args[0]
-        else:
-            raise ValueError
-
-        for argument in args[1:]:
-            if argument[0] == "-" or argument[0] == ">":
-                self.option = argument
-            else:
-                self.args.append(argument)
-
-    def __str__(self):
-        print("==============")
-        print("command : ",self.command)
-        print("option : ",self.option)
-        print("argLen : ",self.argLen)
-        for i in self.args:
-            print(i)
-        
-        return super.__str__(self)
+from input import inputData
+from objects import File,Folder,User,ObjectHandler
+from userExceptions import *
 
 def initProgram():
     user = User("park","1234")
@@ -265,7 +138,9 @@ if __name__ == "__main__":
 
     while(True):
         print("{user}:{current} macbookair$ ".format(user = handler.user.name,current = handler.current.name),end="")
+
         avg = input()
+
 
         if(avg == "exit"):
             break
@@ -274,9 +149,13 @@ if __name__ == "__main__":
 
         try:
             dat = inputData(inputList)
-        except ValueError:
-            print("wrong input")
+        except NoDataError as e:
             continue
+        except CommandError as e:
+            print(e,"{command} is wrong".format(command = inputList[0]))
+            continue
+        
+
         # print(dat)
 
         if dat.command == "cd":
@@ -286,7 +165,11 @@ if __name__ == "__main__":
         elif dat.command == "ls":
             handler.ls(dat)
         elif dat.command == "mkdir":
-            handler.mkdir(dat)
+            try:
+                handler.mkdir(dat)
+            except FileOrFolderNameError as e:
+                print(e)
+
         elif dat.command == "cp":
             handler.cp(dat)
         elif dat.command == "cat":

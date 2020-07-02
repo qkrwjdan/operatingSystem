@@ -1,3 +1,4 @@
+from userExceptions import *
 
 class inputData:
 
@@ -7,24 +8,24 @@ class inputData:
         self.option = None
         self.args = list()
         self.argLen = len(args)
-        print("argLen : ",self.argLen)
-        print("args : " ,args)
 
-        if(self.argLen == 0):
-            raise ValueError
-
-        print("args[0]: ",args[0])
+        if args[0] == "":
+            raise NoDataError
 
         if args[0] in ["cd","ls","pwd","mkdir","rm","cat","cp","find"]:
             self.command = args[0]
         else:
-            raise ValueError
+            raise CommandError
 
         for argument in args[1:]:
-            if argument[0] == "-" or argument[0] == ">":
-                self.option = argument
-            else:
-                self.args.append(argument)
+            try :
+                if argument[0] == "-" or argument[0] == ">":
+                    self.option = argument
+                else:
+                    self.args.append(argument)
+            except IndexError as e:
+                print("argument : ",argument," is wrong arg")
+                print(e)
 
     def __str__(self):
         print("==============")
@@ -35,10 +36,6 @@ class inputData:
             print(i)
         
         return super.__str__(self)
-
-
-        
-
 
 if __name__ == "__main__":
     print(type("string"))
@@ -52,8 +49,6 @@ if __name__ == "__main__":
         aList = avg.split(" ")
 
         dat = inputData(aList)
-
-        print(dat)
 
 
         
