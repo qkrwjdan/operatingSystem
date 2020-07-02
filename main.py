@@ -134,26 +134,28 @@ class Object:
     size = None
     create_date = None
     update_date = None
+    path = str()
 
-    def __init__(self,name,size):
+    def __init__(self,name,size,path=""):
         self.name = name
         self.size = size
         self.create_date = time.time()
         self.update_date = time.time()
+        self.path = path + "/" + name
 
 class File(Object):
     content = None
 
-    def __init__(self,name,size):
-        super.init(self,name,size)
+    def __init__(self,name,size,path):
+        super.init(self,name,size,path)
         self.content = str()
 
 class Folder(Object):
     child_list = list()
     child_num = 0
 
-    def __init(self,name,size):
-        super.init(self,name,size)
+    def __init(self,name,size,path):
+        super.init(self,name,size,path)
         self.child_list = list()
         self.child_num = 0
 
@@ -169,16 +171,38 @@ class ObjectHandler:
         self.current = root
 
     def cd(self,inputData):
-        self.current = inputData
+        pass
     
     def ls(self,inputData):
-        pass
+        for i in self.current.child_list:
+            print(i.name,end = " ")
+            
+        print()
 
     def pwd(self,inputData):
-        print(self.root.name,inputData.command)
+        if inputData.option is not None:
+            print("pwd : {option} : invalid option ".format(inputData.option))
+        else:
+            print(self.current.path)
 
     def mkdir(self,inputData):
-        pass
+        if inputData.option is None:
+            for i in inputData.args:
+                for j in self.current.child_list:
+                    print("i : ", i, "j : ",j.name)
+                    if i == j.name:
+                        raise ValueError
+                _dir = Folder(i,0,self.current.name)
+                self.current.addFolder(_dir)
+
+        elif inputData.option == "-p":
+            pass
+
+        elif inputData.option == "-m":
+            pass
+
+        else:
+            pass
 
     def rm(self,inputData):
         pass
@@ -204,10 +228,7 @@ class inputData:
 
         if(self.argLen == 0):
             raise ValueError
-        # print("argLen : ",self.argLen)
-        # print("args : " ,args)
-        # print("args[0]: ",args[0])
-        
+
         if args[0] in ["cd","ls","pwd","mkdir","rm","cat","cp","find"]:
             self.command = args[0]
         else:
@@ -232,7 +253,7 @@ class inputData:
 def initProgram():
     user = User("park","1234")
     root = Folder("root",0)
-    user_folder = Folder(user.name,0)
+    user_folder = Folder(user.name,0,root.name)
     root.addFolder(user_folder)
 
     handler = ObjectHandler(root,user)
@@ -250,27 +271,29 @@ if __name__ == "__main__":
             break
 
         inputList = avg.split(" ")
+
         try:
             dat = inputData(inputList)
         except ValueError:
             print("wrong input")
             continue
+        # print(dat)
 
         if dat.command == "cd":
-            pass
+            handler.cd(dat)
         elif dat.command == "pwd":
             handler.pwd(dat)
         elif dat.command == "ls":
-            pass
+            handler.ls(dat)
         elif dat.command == "mkdir":
-            pass
+            handler.mkdir(dat)
         elif dat.command == "cp":
-            pass
+            handler.cp(dat)
         elif dat.command == "cat":
-            pass
+            handler.cat(dat)
         elif dat.command == "rm":
-            pass
+            handler.rm(dat)
         elif dat.command == "find":
-            pass
+            handler.find(dat)
 
 
