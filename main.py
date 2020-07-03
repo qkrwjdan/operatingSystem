@@ -125,7 +125,8 @@ from userExceptions import *
 
 def initProgram():
     user = User("park","1234")
-    root = Folder("root",0,)
+    root = Folder("root",0)
+    root.path = "root"
     user_folder = Folder(user.name,0,root.name)
     root.addFolder(user_folder)
 
@@ -139,8 +140,7 @@ if __name__ == "__main__":
     while(True):
         print("{user}:{current} macbookair$ ".format(user = handler.user.name,current = handler.current.name),end="")
 
-        print("current path : ",handler.current.path)
-        avg = input()
+        avg = input().strip()
 
         if(avg == "exit"):
             break

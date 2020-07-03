@@ -31,26 +31,26 @@ class Object:
     update_date = None
     path = str()
 
-    def __init__(self,name,size,path=""):
+    def __init__(self,name,size,parent_path=""):
         self.name = name
         self.size = size
         self.create_date = time.time()
         self.update_date = time.time()
-        self.path = path + "/" + name
+        self.path = parent_path + "/" + name
 
 class File(Object):
     content = None
 
-    def __init__(self,name,size,path=""):
-        super().__init__(name,size,path)
+    def __init__(self,name,size,parent_path=""):
+        super().__init__(name,size,parent_path)
         self.content = str()
 
 class Folder(Object):
     child_list = list()
     child_num = 0
 
-    def __init__(self,name,size,path=""):
-        super().__init__(name,size,path)
+    def __init__(self,name,size,parent_path=""):
+        super().__init__(name,size,parent_path)
         self.child_list = list()
         self.child_num = 0
 
@@ -72,37 +72,36 @@ class ObjectHandler:
             raise ValueError
         
         print(inputData.args)
-        dir_name = inputData.args[0]
+
+        try:
+            dir_name = inputData.args[0]
+        except IndexError as e:
+            dir_name = ""
+            print(e)
         
         if dir_name == ".":
-            print(dir_name)
+            pass
 
         elif dir_name == "..":
-            print(dir_name)
             dir_list = self.current.path.split("/")
-            dir_list.pop()
-            print("dir_list : ",dir_list)
             self.current = self.root 
             for i in dir_list:
                 if i == "root":
                     continue
-                if i == "":
-                    continue
+                # if i == "":
+                #     continue
                 inputData.args[0] = i
                 self.cd(inputData)
             
         elif dir_name == "~":
-            print(dir_name)
             self.current = self.root 
-            inputData.args[0] = "park" #user.name
+            inputData.args[0] = self.user.name
             self.cd(inputData)
 
         elif dir_name == "/":
-            print(dir_name)
             self.current = self.root
 
         elif isPath(dir_name):
-            print(dir_name)
             #절대경로
             if dir_name[0] == "/":
                 self.current = self.root
@@ -118,14 +117,11 @@ class ObjectHandler:
                     self.cd(inputData)
 
         else :
-            print(dir_name)
             match_obj = None
 
             for i in self.current.child_list:
                 if dir_name == i.name:
                     match_obj = i
-            
-            print(match_obj.name)
 
             if match_obj is None:
                 print("there is no such dir")
