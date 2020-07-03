@@ -1,19 +1,25 @@
 from objects import File,Folder,isDir,isFile
 
 if __name__ == "__main__":
-    a = File("file",0,"root")
-    b = Folder("folder",0,"root")
+    ps = "/"
+    li = ps.split("/")
+    li = ps[1:].split("/")
 
-    print(type(b))
-    if isDir(b):
-        print("success!")
+    ps2 = "a/b/c/d"
+    li2 = ps2.split("/")
+    li2.pop()
+    
 
-    if isFile(b):
-        print("fail")
+    ps3 = "/a/b/c/d"
+    li3 = ps3.split("/")
+    lis3 = li3[1:]
 
-    print(type(a))
-    if isDir(a):
-        print("success!")
+    ps4 = "/"
+    li4 = ps4.split("/")
 
-    if isFile(a):
-        print("fail")
+
+    print(li)
+    print(li2)
+    print(li3)
+    print(li4)
+    print(lis3)

@@ -70,7 +70,8 @@ class ObjectHandler:
         if len(inputData.args) > 1:
             #define user error (07/02)
             raise ValueError
-
+        
+        print(inputData.args)
         dir_name = inputData.args[0]
         
         if dir_name == ".":
@@ -78,12 +79,23 @@ class ObjectHandler:
 
         elif dir_name == "..":
             print(dir_name)
-
+            dir_list = self.current.path.split("/")
+            dir_list.pop()
+            print("dir_list : ",dir_list)
+            self.current = self.root 
+            for i in dir_list:
+                if i == "root":
+                    continue
+                if i == "":
+                    continue
+                inputData.args[0] = i
+                self.cd(inputData)
+            
         elif dir_name == "~":
             print(dir_name)
             self.current = self.root 
-            inputData.args[0] = "park"
-            return self.cd(inputData)
+            inputData.args[0] = "park" #user.name
+            self.cd(inputData)
 
         elif dir_name == "/":
             print(dir_name)
@@ -91,17 +103,43 @@ class ObjectHandler:
 
         elif isPath(dir_name):
             print(dir_name)
-            dir_list = dir_name.split("/")
-            for i in dir_list:
-                self.cd(i)
+            #절대경로
+            if dir_name[0] == "/":
+                self.current = self.root
+                dir_list = dir_name[1:].split("/")
+                for i in dir_list:
+                    inputData.args[0] = i
+                    self.cd(inputData)
+            #상대경로
+            else :
+                dir_list = dir_name.split("/")
+                for i in dir_list:
+                    inputData.args[0] = i
+                    self.cd(inputData)
 
         else :
             print(dir_name)
+            match_obj = None
+
             for i in self.current.child_list:
-                if  dir_name == i.name:
-                    if isDir(i):
-                        self.current = i
-                    
+                if dir_name == i.name:
+                    match_obj = i
+            
+            print(match_obj.name)
+
+            if match_obj is None:
+                print("there is no such dir")
+                    # there is no such dir. define noSuchDirError(07/02)
+                    # raise ValueError
+                raise ValueError
+            
+            if isDir(i):
+                self.current = match_obj
+            else:
+                print("it is not dir")
+                # it is not dir. define NotDirError(07/02)
+                # raise ValueError
+                raise ValueError
     
     def ls(self,inputData):
         for i in self.current.child_list:
@@ -126,7 +164,7 @@ class ObjectHandler:
                     if i == j.name:
                         raise FileOrFolderNameError("same directory is exist")
                     
-                _dir = Folder(i,0,self.current.name)
+                _dir = Folder(i,0,self.current.path)
                 self.current.addFolder(_dir)
 
         elif inputData.option == "-p":
