@@ -125,9 +125,9 @@ from userExceptions import *
 
 def initProgram():
     user = User("park","1234")
-    root = Folder("root",0,user,755)
+    root = Folder("root",user,755)
     root.path = "root"
-    user_folder = Folder(user.name,0,user,755,root.name)
+    user_folder = Folder(user.name,user,755,root.name)
     root.addFolder(user_folder)
 
     handler = ObjectHandler(root,user)

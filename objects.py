@@ -1,5 +1,6 @@
 import time
 from userExceptions import *
+from sys import getsizeof
 
 def isPath(string_obj):
     if '/' in string_obj:
@@ -33,9 +34,9 @@ class Object:
     update_date = None
     path = str()
 
-    def __init__(self,name,size,owner,permission=755,parent_path=""):
+    def __init__(self,name,owner,permission=755,parent_path=""):
         self.name = name
-        self.size = size
+        self.size = getsizeof(self)
         self.permission = permission
         self.owner = owner
         self.create_date = time.time()
