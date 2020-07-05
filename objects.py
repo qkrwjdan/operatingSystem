@@ -27,13 +27,17 @@ class User:
 class Object:
     name = None
     size = None
+    owner = None
+    permission = None
     create_date = None
     update_date = None
     path = str()
 
-    def __init__(self,name,size,parent_path=""):
+    def __init__(self,name,size,owner,permission=755,parent_path=""):
         self.name = name
         self.size = size
+        self.permission = permission
+        self.owner = owner
         self.create_date = time.time()
         self.update_date = time.time()
         self.path = parent_path + "/" + name
@@ -41,16 +45,16 @@ class Object:
 class File(Object):
     content = None
 
-    def __init__(self,name,size,parent_path=""):
-        super().__init__(name,size,parent_path)
+    def __init__(self,name,size,owner,permission,parent_path=""):
+        super().__init__(name,size,owner,permission,parent_path)
         self.content = str()
 
 class Folder(Object):
     child_list = list()
     child_num = 0
 
-    def __init__(self,name,size,parent_path=""):
-        super().__init__(name,size,parent_path)
+    def __init__(self,name,size,owner,permission,parent_path=""):
+        super().__init__(name,size,owner,permission,parent_path)
         self.child_list = list()
         self.child_num = 0
 
@@ -159,9 +163,12 @@ class ObjectHandler:
                 for j in self.current.child_list:
                     if i == j.name:
                         raise FileOrFolderNameError("same directory is exist")
-                    
-                _dir = Folder(i,0,self.current.path)
+                
+                _dir = Folder(name = i,size = 0,owner = self.user,permission = 755,parent_path = self.current.path)
                 self.current.addFolder(_dir)
+        
+            print("owner : ",_dir.owner)
+            print("permission : ",_dir.permission)
 
         elif inputData.option == "-p":
             pass
