@@ -17,6 +17,38 @@ def isFile(dir_or_file_obj):
         return 1
     return 0
 
+def intToPermissionString(one_digit):
+    if one_digit == 7:
+        return "wrx"
+    elif one_digit == 6:
+        return "wr-"
+    elif one_digit == 5:
+        return "w-x"
+    elif one_digit == 4:
+        return "w--"
+    elif one_digit == 3:
+        return "-rx"
+    elif one_digit == 2:
+        return "-r-"
+    elif one_digit == 1:
+        return "--x"
+
+def getPermissionStr(int_permission):
+    owner_permission = int(int_permission / 100)
+    group_permission = int(int_permission / 10) % 10
+    etc_permission = int_permission % 10
+
+    permission_str = intToPermissionString(owner_permission) + intToPermissionString(group_permission) + intToPermissionString(etc_permission)
+    return permission_str
+
+def isDirOrFileReturnStr(dir_or_file_obj):
+    if isDir(dir_or_file_obj):
+        return "d"
+    elif isFile(dir_or_file_obj):
+        return "-"
+    else:
+        return "l"
+
 class User:
     name = None
     pwd = None
@@ -144,6 +176,9 @@ class ObjectHandler:
     
     def ls(self,inputData):
 
+        #ls -l path를 구현하기
+        #현재는 current directory만 출력가능 (07/06)
+
         if inputData.option == "-a":
             for i in self.current.child_list:
                 print(i.name,end = " ")
@@ -154,20 +189,20 @@ class ObjectHandler:
             for i in self.current.child_list:
                 if i.name.startswith("."):
                     continue
-                print(i.permission,2,i.owner.name,"staff",i.size,i.update_date,i.name)
+                print(isDirOrFileReturnStr(i),getPermissionStr(i.permission),2,i.owner.name,"staff",i.size,i.update_date,i.name)
 
         elif inputData.option == "-al":
             print("permission linkNum user group size date name")
             for i in self.current.child_list:
-                print(i.permission,2,i.owner.name,"staff",i.size,i.update_date,i.name)
+                print(isDirOrFileReturnStr(i),getPermissionStr(i.permission),2,i.owner.name,"staff",i.size,i.update_date,i.name)
 
         elif inputData.option == "-ll":
             print("permission linkNum user group size date name")
             for i in self.current.child_list:
                 if i.name.startswith("."):
                     continue
-                print(i.permission,2,i.owner.name,"staff",i.size,i.update_date,i.name)
-
+                print(isDirOrFileReturnStr(i),getPermissionStr(i.permission),2,i.owner.name,"staff",i.size,i.update_date,i.name)
+                
         else:
             for i in self.current.child_list:
                 if i.name.startswith("."):
