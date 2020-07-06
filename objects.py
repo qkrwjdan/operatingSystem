@@ -46,16 +46,16 @@ class Object:
 class File(Object):
     content = None
 
-    def __init__(self,name,size,owner,permission,parent_path=""):
-        super().__init__(name,size,owner,permission,parent_path)
+    def __init__(self,name,owner,permission,parent_path=""):
+        super().__init__(name,owner,permission,parent_path)
         self.content = str()
 
 class Folder(Object):
     child_list = list()
     child_num = 0
 
-    def __init__(self,name,size,owner,permission,parent_path=""):
-        super().__init__(name,size,owner,permission,parent_path)
+    def __init__(self,name,owner,permission,parent_path=""):
+        super().__init__(name,owner,permission,parent_path)
         self.child_list = list()
         self.child_num = 0
 
@@ -143,10 +143,37 @@ class ObjectHandler:
                 raise ValueError
     
     def ls(self,inputData):
-        for i in self.current.child_list:
-            print(i.name,end = " ")
-            
-        print()
+
+        if inputData.option == "-a":
+            for i in self.current.child_list:
+                print(i.name,end = " ")
+            print()
+
+        elif inputData.option == "-l":
+            print("permission linkNum user group size date name")
+            for i in self.current.child_list:
+                if i.name.startswith("."):
+                    continue
+                print(i.permission,2,i.owner.name,"staff",i.size,i.update_date,i.name)
+
+        elif inputData.option == "-al":
+            print("permission linkNum user group size date name")
+            for i in self.current.child_list:
+                print(i.permission,2,i.owner.name,"staff",i.size,i.update_date,i.name)
+
+        elif inputData.option == "-ll":
+            print("permission linkNum user group size date name")
+            for i in self.current.child_list:
+                if i.name.startswith("."):
+                    continue
+                print(i.permission,2,i.owner.name,"staff",i.size,i.update_date,i.name)
+
+        else:
+            for i in self.current.child_list:
+                if i.name.startswith("."):
+                    continue
+                print(i.name,end = " ")
+            print()
 
     def pwd(self,inputData):
         if inputData.option is not None:
@@ -165,7 +192,7 @@ class ObjectHandler:
                     if i == j.name:
                         raise FileOrFolderNameError("same directory is exist")
                 
-                _dir = Folder(name = i,size = 0,owner = self.user,permission = 755,parent_path = self.current.path)
+                _dir = Folder(name = i,owner = self.user,permission = 755,parent_path = self.current.path)
                 self.current.addFolder(_dir)
         
             print("owner : ",_dir.owner)
