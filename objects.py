@@ -1,6 +1,7 @@
 import time
 from userExceptions import *
 from sys import getsizeof
+from input import InputData
 
 def isPath(string_obj):
     if '/' in string_obj:
@@ -121,12 +122,11 @@ class ObjectHandler:
 
         elif dir_name == "..":
             dir_list = self.current.path.split("/")
+            print("dir_list : ",dir_list)
             self.current = self.root 
-            for i in dir_list:
-                if i == "root":
+            for i in dir_list[:-1]:
+                if i == "":
                     continue
-                # if i == "":
-                #     continue
                 inputData.args[0] = i
                 self.cd(inputData)
             
@@ -161,10 +161,7 @@ class ObjectHandler:
                     match_obj = i
 
             if match_obj is None:
-                print("there is no such dir")
-                    # there is no such dir. define noSuchDirError(07/02)
-                    # raise ValueError
-                raise ValueError
+                raise NoSuchDirectoryError
             
             if isDir(i):
                 self.current = match_obj
@@ -202,7 +199,7 @@ class ObjectHandler:
                 if i.name.startswith("."):
                     continue
                 print(isDirOrFileReturnStr(i),getPermissionStr(i.permission),2,i.owner.name,"staff",i.size,i.update_date,i.name)
-                
+
         else:
             for i in self.current.child_list:
                 if i.name.startswith("."):
@@ -214,7 +211,10 @@ class ObjectHandler:
         if inputData.option is not None:
             print("pwd : {option} : invalid option ".format(inputData.option))
         else:
-            print(self.current.path)
+            if self.current == self.root:
+                print("/")
+            else :
+                print(self.current.path)
 
     def mkdir(self,inputData):
         if inputData.option is None:
@@ -234,7 +234,39 @@ class ObjectHandler:
             print("permission : ",_dir.permission)
 
         elif inputData.option == "-p":
-            pass
+
+            for i in inputData.args:
+                if not isPath(i):
+                    print("wrong input")
+                    raise ValueError
+
+                if not i[0] == "/":
+                    print("wrong path")
+                    raise ValueError
+
+                dir_list = i[1:].split("/")
+                print(dir_list)
+
+                if self.current == self.root:
+                    temp_path = "/"
+                else :
+                    temp_path = self.current.path
+
+                temp_input = InputData(["cd","/"])
+                self.cd(temp_input)
+
+                for i in dir_list:
+                    print(dir_list)
+                    print("i : ",i)
+                    try:
+                        tmp = InputData(["mkdir",i])
+                        self.cd(tmp)
+                    except NoSuchDirectoryError :
+                        self.mkdir(tmp)
+                        self.cd(tmp)
+                
+                print("temp_path : ", temp_path)
+                self.cd(InputData(["cd",temp_path]))
 
         elif inputData.option == "-m":
             pass

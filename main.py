@@ -119,15 +119,15 @@
 4. find 상대경로/절대경로 (-name) (part)
 
 """
-from input import inputData
+from input import InputData
 from objects import File,Folder,User,ObjectHandler
 from userExceptions import *
 
 def initProgram():
     user = User("park","1234")
     root = Folder("root",user,755)
-    root.path = "root"
-    user_folder = Folder(user.name,user,755,root.name)
+    root.path = ""
+    user_folder = Folder(user.name,user,755,root.path)
     root.addFolder(user_folder)
 
     handler = ObjectHandler(root,user)
@@ -148,7 +148,7 @@ if __name__ == "__main__":
         inputList = avg.split(" ")
 
         try:
-            dat = inputData(inputList)
+            dat = InputData(inputList)
         except NoDataError as e:
             continue
         except CommandError as e:
@@ -161,6 +161,8 @@ if __name__ == "__main__":
         if dat.command == "cd":
             try:
                 handler.cd(dat)
+            except NoSuchDirectoryError:
+                pass
             except ValueError as e:
                 print(e)
                 pass

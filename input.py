@@ -1,6 +1,6 @@
 from userExceptions import *
 
-class inputData:
+class InputData:
 
     def __init__(self,args):
 
@@ -48,7 +48,7 @@ if __name__ == "__main__":
 
         aList = avg.split(" ")
 
-        dat = inputData(aList)
+        dat = InputData(aList)
 
 
         
