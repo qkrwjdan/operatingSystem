@@ -50,6 +50,21 @@ def isDirOrFileReturnStr(dir_or_file_obj):
     else:
         return "l"
 
+def permissionValidationCheck(int_permission):
+    owner_permission = int(int_permission / 100)
+    group_permission = int(int_permission / 10) % 10
+    etc_permission = int_permission % 10
+
+    if (owner_permission > 7) or (owner_permission < 0):
+        raise ValueError
+    
+    if (group_permission > 7) or (group_permission < 0):
+        raise ValueError
+
+    if (etc_permission > 7) or (etc_permission < 0):
+        raise ValueError
+
+
 class User:
     name = None
     pwd = None
@@ -269,10 +284,36 @@ class ObjectHandler:
                 self.cd(InputData(["cd",temp_path]))
 
         elif inputData.option == "-m":
-            pass
+            # mkdir -m 824 
+            # 명령어에 대한 예외처리 (07/08)
+            
+            print(inputData.args)
 
-        else:
-            pass
+            permission = inputData.args[0]
+
+            try:
+                int_permission = int(inputData.args[0])
+                permissionValidationCheck(int_permission)
+            except ValueError as e:
+                print(e)
+                return
+
+            fileName = inputData.args[1]
+
+            for i in inputData.args[1:]:
+
+                if isPath(i):
+                    raise FileOrFolderNameError("directory name is path")
+
+                for j in self.current.child_list:
+                    if i == j.name:
+                        raise FileOrFolderNameError("same directory is exist")
+                
+                _dir = Folder(name = i,owner = self.user,permission = int_permission,parent_path = self.current.path)
+                self.current.addFolder(_dir)
+        
+            print("owner : ",_dir.owner)
+            print("permission : ",_dir.permission)
 
     def rm(self,inputData):
         pass

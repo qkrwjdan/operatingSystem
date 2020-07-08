@@ -32,6 +32,17 @@ def getPermissionStr(permission):
     return permission_str
 
 if __name__ == "__main__":
-    print(getPermissionStr(755))
+    str_permission = "755"
+    int_permission = int(str_permission)
+
+    print(str_permission)
+    print(int_permission)
+
+    wrong_str_permission = "a1010"
+    wrong_int_permission = int(wrong_str_permission)
+    
+    print(wrong_str_permission)
+    print(wrong_int_permission)
+
     
 
