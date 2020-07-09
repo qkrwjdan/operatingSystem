@@ -94,9 +94,9 @@ class Object:
 class File(Object):
     content = None
 
-    def __init__(self,name,owner,permission,parent_path=""):
+    def __init__(self,name,owner,permission,parent_path,content):
         super().__init__(name,owner,permission,parent_path)
-        self.content = str()
+        self.content = content
 
 class Folder(Object):
     child_list = list()
@@ -285,8 +285,8 @@ class ObjectHandler:
 
         elif inputData.option == "-m":
             # mkdir -m 824 
-            # 명령어에 대한 예외처리 (07/08)
-            
+            # 명령어에 대한 예외처리 필(07/08)
+
             print(inputData.args)
 
             permission = inputData.args[0]
@@ -316,13 +316,68 @@ class ObjectHandler:
             print("permission : ",_dir.permission)
 
     def rm(self,inputData):
-        pass
+        if inputData.option is None:
+            pass
+        elif inputData.option == "-rf":
+            pass
 
     def cp(self,inputData):
         pass
 
     def cat(self,inputData):
-        pass
+        print(inputData.option)
+        print(inputData.args)
+
+        if inputData.option == ">":
+            print("in > option")
+            # 여러 인지가 입력된 경우 사용자 지정 에러 필(07/09)
+            if len(inputData.args) > 1:
+                print("so much filename")
+                raise ValueError
+
+            for i in self.current.child_list:
+                # 똑같은 파일이나 디렉토리가 있는경우 사용자 에러 필(07/09)
+                # 그럼 덮어쓰기가 불가능 -> 다른 방안을 생각해보자. (07/09)
+                if inputData.args[0] == i.name:
+                    print("there is same name file or directory")
+                    raise ValueError
+            
+            con = str()
+
+            try:
+                while True:
+                    con = con + input() + "\n"
+
+            except EOFError as e:
+                print("ctrl + d")
+
+            print(con)
+
+            _file = File(inputData.args[0],self.user,755,self.current.path,con)
+            self.current.addFolder(_file)
+
+        elif inputData.option == "-n":
+            pass
+        elif inputData.option is None:
+            print("in non option")
+            match_obj = None
+
+            for i in self.current.child_list:
+                if inputData.args[0] == i.name:
+                    match_obj = i
+
+            #파일이 없는 경우 사용자 지정 에러 필(07/09)
+            if match_obj is None:
+                print("there is no file")
+                raise ValueError
+
+            if isFile(match_obj):
+                print(i.name)
+                print(i.content)
+            else:
+                #파일이 아닌 경우 사용자 지정 에러 필(07/09)
+                print("it is not file!")
+                raise ValueError
 
     def find(self,inputData):
         pass

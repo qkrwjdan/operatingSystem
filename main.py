@@ -165,7 +165,7 @@ if __name__ == "__main__":
                 pass
             except ValueError as e:
                 print(e)
-                pass
+
         elif dat.command == "pwd":
             handler.pwd(dat)
         elif dat.command == "ls":
@@ -179,7 +179,11 @@ if __name__ == "__main__":
         elif dat.command == "cp":
             handler.cp(dat)
         elif dat.command == "cat":
-            handler.cat(dat)
+            try:
+                handler.cat(dat)
+            except ValueError:
+                pass
+
         elif dat.command == "rm":
             handler.rm(dat)
         elif dat.command == "find":
