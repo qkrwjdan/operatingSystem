@@ -110,6 +110,15 @@ class Folder(Object):
     def addFolder(self,sub_directory):
         self.child_list.append(sub_directory)
         self.child_num = self.child_num + 1
+    
+    def deleteFile(self,file_obj):
+        index = 0
+        for ele in self.child_list:
+            if ele.name == file_obj.name:
+                del self.child_list[index]
+                break
+            index = index + 1
+
 
 class ObjectHandler:
 
@@ -317,7 +326,24 @@ class ObjectHandler:
 
     def rm(self,inputData):
         if inputData.option is None:
-            pass
+            for i in inputData.args:
+                match_obj = None
+
+                for j in self.current.child_list:
+                    if i == j.name:
+                        match_obj = j
+                    
+                if match_obj is None:
+                    print("there is no file")
+                    continue
+                    # raise ValueError
+                
+                if isFile(match_obj):
+                    self.current.deleteFile(match_obj)
+                elif isDir(match_obj):
+                    print("it isn't file, it is dir")
+                    #raise ValueError
+
         elif inputData.option == "-rf":
             pass
 

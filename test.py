@@ -2,22 +2,22 @@ from objects import File,Folder,Object,User
 
 if __name__ == "__main__":
     
-    content = str()
-    while True:
-        try:
-            while True:
-                content = content + input() + "\n"
 
-        except EOFError as e:
-            print("error")
-            print(e)
+    _list = [1,2,3,4,5,1,2,3,4,5]
+
+    index = 0
+    for ele in _list:
+        print("ele : ",ele,"index : ",index)
+        index = index + 1
+
+    index = 0
+    for ele in _list:
+        if ele == 3:
+            del _list[index]
             break
-        
-        if content == "exit":
-            break
+        index = index + 1
     
-    
-    print(content)
+    print(_list)
 
 
     
