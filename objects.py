@@ -345,7 +345,19 @@ class ObjectHandler:
                     #raise ValueError
 
         elif inputData.option == "-rf":
-            pass
+            for i in inputData.args:
+                match_obj = None
+
+                for j in self.current.child_list:
+                    if i == j.name:
+                        match_obj = j
+                    
+                if match_obj is None:
+                    print("there is no file")
+                    continue
+                    # raise ValueError
+                
+                self.current.deleteFile(match_obj)
 
     def cp(self,inputData):
         pass
@@ -384,6 +396,7 @@ class ObjectHandler:
 
         elif inputData.option == "-n":
             print("in -n option")
+            #무조건 마지막에 \n이 입력되어 있는 에러 (07/10)
 
             for i in self.current.child_list:
                 if inputData.args[0] == i.name:
