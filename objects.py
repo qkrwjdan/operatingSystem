@@ -383,7 +383,31 @@ class ObjectHandler:
             self.current.addFolder(_file)
 
         elif inputData.option == "-n":
-            pass
+            print("in -n option")
+
+            for i in self.current.child_list:
+                if inputData.args[0] == i.name:
+                    match_obj = i
+
+            #파일이 없는 경우 사용자 지정 에러 필(07/09)
+            if match_obj is None:
+                print("there is no file")
+                raise ValueError
+
+            if isFile(match_obj):
+                str_list = match_obj.content.split("\n")
+                print(str_list)
+
+                index = 0
+                for word in str_list:
+                    index = index + 1
+                    print(str(index)+"."+word)
+                
+            else:
+                #파일이 아닌 경우 사용자 지정 에러 필(07/09)
+                print("it is not file!")
+                raise ValueError
+
         elif inputData.option is None:
             print("in non option")
             match_obj = None
