@@ -6,6 +6,19 @@ from input import InputData
 def isPath(string_obj):
     if '/' in string_obj:
         return 1
+    elif string_obj == ".":
+        return 1
+    
+    return 0
+
+def isAbsPath(string_obj):
+    if string_obj[0] == '/':
+        return 1
+    return 0
+
+def isRelPath(string_obj):
+    if not string_obj[0] == '/':
+        return 1
     return 0
 
 def isDir(dir_or_file_obj):
@@ -17,6 +30,13 @@ def isFile(dir_or_file_obj):
     if str(type(dir_or_file_obj)) == "<class 'objects.File'>":
         return 1
     return 0
+
+def dividePath(string_obj):
+    path_list = string_obj.split("/")
+    if isAbsPath(string_obj):
+        return path_list[1:]
+    else :
+        return path_list
 
 def intToPermissionString(one_digit):
     if one_digit == 7:
@@ -443,4 +463,80 @@ class ObjectHandler:
                 raise ValueError
 
     def find(self,inputData):
-        pass
+
+        if not inputData.option == "-name":
+            #option이 잘못된 경우 사용자 지정 에러 필(07/11)
+            print("option is wrong")
+            raise ValueError
+
+        if not len(inputData.args) == 2:
+            #args이 잘못된 경우 사용자 지정 에러 필(07/11)
+            print("args is empty or it have just one arg")
+            raise ValueError
+
+        #isPath가 필요없지 않을까?(07/12)
+        path = inputData.args[0]
+        find_name = inputData.args[1]
+
+        if self.current == self.root:
+            temp_path = "/"
+        else :
+            temp_path = self.current.path
+
+        self.cd(InputData(["cd",path]))
+
+        finalRecursiveFind(self.current,find_name)
+
+        self.cd(InputData(["cd",temp_path]))
+
+def recursiveFind(directory,find_name):
+    for child in directory.child_list:
+        if find_name == child.name:
+            print("child.path : ",child.path)
+    
+    for child in directory.child_list:
+        recursiveFind(child,find_name)
+
+def _recursiveFind_(directory,find_name):
+    for child in directory.child_list:
+        if find_name in child.name:
+            print("child.path : ",child.path)
+    
+    for child in directory.child_list:
+        _recursiveFind_(child,find_name)
+
+def _recursiveFind(directory,find_name):
+    for child in directory.child_list:
+        if child.name.endswith(find_name):
+            print("child.path : ",child.path)
+    
+    for child in directory.child_list:
+        _recursiveFind(child,find_name)
+
+def recursiveFind_(directory,find_name):
+    for child in directory.child_list:
+        if child.name.startswith(find_name):
+            print("child.path : ",child.path)
+    
+    for child in directory.child_list:
+        recursiveFind_(child,find_name)
+
+def finalRecursiveFind(directory,find_name):
+    
+    if "*" in find_name:
+        re_name = find_name.replace("*","")
+        if find_name[0] == "*" and find_name.endswith("*") and find_name.count("*") == 2:
+            _recursiveFind_(directory,re_name)
+        elif find_name[0] == "*" and find_name.count("*") == 1:
+            _recursiveFind(directory,re_name)
+        elif find_name.endswith("*") and find_name.count("*") == 1:
+            recursiveFind_(directory,re_name)
+        else:
+            raise ValueError
+    else:
+        recursiveFind(directory,find_name)
+
+
+
+
+        

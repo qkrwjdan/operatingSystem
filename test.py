@@ -2,16 +2,11 @@ from objects import File,Folder,Object,User
 
 if __name__ == "__main__":
     
-    _str = "asd\nlajsf\nkjal;sgd\nlkajsd\nlkajsgd\n"
+    find_name = "*test*"
 
-    print(_str)
-    _list = _str.split("\n")
-    print(_list)
+    file_name = "123test"
 
-    index = 0
-    for word in _list:
-        index = index + 1
-        print(str(index)+"."+word)
+    re_name = find_name.replace("*","")
 
-    
-
+    print(find_name)
+    print(re_name)
