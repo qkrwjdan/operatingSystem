@@ -38,7 +38,7 @@ def dividePath(string_obj):
     else :
         return path_list
 
-def intToPermissionString(one_digit):
+def transferPermisionIntToString(one_digit):
     if one_digit == 7:
         return "wrx"
     elif one_digit == 6:
@@ -59,7 +59,7 @@ def getPermissionStr(int_permission):
     group_permission = int(int_permission / 10) % 10
     etc_permission = int_permission % 10
 
-    permission_str = intToPermissionString(owner_permission) + intToPermissionString(group_permission) + intToPermissionString(etc_permission)
+    permission_str = transferPermisionIntToString(owner_permission) + transferPermisionIntToString(group_permission) + transferPermisionIntToString(etc_permission)
     return permission_str
 
 def isDirOrFileReturnStr(dir_or_file_obj):
@@ -70,7 +70,7 @@ def isDirOrFileReturnStr(dir_or_file_obj):
     else:
         return "l"
 
-def permissionValidationCheck(int_permission):
+def checkPermissionValidation(int_permission):
     owner_permission = int(int_permission / 100)
     group_permission = int(int_permission / 10) % 10
     etc_permission = int_permission % 10
@@ -84,6 +84,30 @@ def permissionValidationCheck(int_permission):
     if (etc_permission > 7) or (etc_permission < 0):
         raise ValueError
 
+def isSafePath(directory,path_list):
+
+    if not path_list:
+        return 1
+
+    for child in directory.child_list:
+        if path_list[0] == child.name:
+            return isSafePath(child,path_list[1:])
+    
+    return 0
+
+def getSafePathFromPath(directory,path_list):
+
+    return_string = "/"
+
+    if not path_list:
+        return ""
+    
+    for child in directory.child_list:
+        if path_list[0] == child.name:
+            return "/" + child.name + getSafePathFromPath(child,path_list[1:])
+    
+    return ""
+    
 
 class User:
     name = None
@@ -205,9 +229,10 @@ class ObjectHandler:
                     match_obj = i
 
             if match_obj is None:
+                print("there is no such dir")
                 raise NoSuchDirectoryError
             
-            if isDir(i):
+            if isDir(match_obj):
                 self.current = match_obj
             else:
                 print("it is not dir")
@@ -322,7 +347,7 @@ class ObjectHandler:
 
             try:
                 int_permission = int(inputData.args[0])
-                permissionValidationCheck(int_permission)
+                checkPermissionValidation(int_permission)
             except ValueError as e:
                 print(e)
                 return
@@ -380,7 +405,67 @@ class ObjectHandler:
                 self.current.deleteFile(match_obj)
 
     def cp(self,inputData):
-        pass
+
+        if inputData.option is not None:
+            #에러 만들어라(07/14)
+            print("option is wrong")
+            raise ValueError
+
+        if not len(inputData.args) == 2:
+            #에러 만들어라 (07/14)
+            print("args is empty or it have just one arg")
+            raise ValueError
+
+        copied_file = inputData.args[0]
+        copy_path = inputData.args[1]
+
+        match_obj = None
+        for child in self.current.child_list:
+            if copied_file == child.name:
+                match_obj = child
+
+        if match_obj is None:
+            print("there is no such file")
+            raise ValueError
+
+        if isDir(match_obj):
+            print("it is dir")
+            raise ValueError
+
+        if self.current == self.root:
+            temp_path = "/"
+        else :
+            temp_path = self.current.path
+
+        path_list = dividePath(copy_path)
+        safe_path = getSafePathFromPath(self.root,path_list)
+        print("safe_path : ",safe_path)
+        print("type(safe_path) : ",type(safe_path))
+
+        copy_file_name = copy_path.replace(safe_path,"")
+
+        if copy_file_name == "":
+            copy_file_name = match_obj.name
+        elif copy_file_name[0] == "/":
+            copy_file_name = copy_file_name[1:]
+
+        try:
+            self.cd(InputData(["cd",safe_path]))
+        except NoSuchDirectoryError:
+            pass
+
+        print("copy_file_name : ",copy_file_name)
+
+        _file= File(name = copy_file_name,
+                    owner = match_obj.owner,
+                    permission = match_obj.permission,
+                    parent_path = self.current.path,
+                    content = match_obj.content)
+        
+        self.current.addFolder(_file)
+        print("successfully done")
+        self.cd(InputData(["cd",temp_path]))
+
 
     def cat(self,inputData):
         print(inputData.option)
@@ -455,8 +540,8 @@ class ObjectHandler:
                 raise ValueError
 
             if isFile(match_obj):
-                print(i.name)
-                print(i.content)
+                print(match_obj.name)
+                print(match_obj.content)
             else:
                 #파일이 아닌 경우 사용자 지정 에러 필(07/09)
                 print("it is not file!")

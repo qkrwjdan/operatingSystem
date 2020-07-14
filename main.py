@@ -183,10 +183,15 @@ if __name__ == "__main__":
                 handler.cat(dat)
             except ValueError:
                 pass
-
         elif dat.command == "rm":
-            handler.rm(dat)
+            try:
+                handler.rm(dat)
+            except:
+                pass
         elif dat.command == "find":
-            handler.find(dat)
+            try:
+                handler.find(dat)
+            except:
+                pass
 
 
